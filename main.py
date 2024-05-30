@@ -27,22 +27,23 @@ def compress_as(source: str, format: str, picname: str, save_at: str, quality: i
     compress_as(source=imagen, format=format, picname=name_for_picture, save_at=download_route, quality=30)
     ```
     """
-    try:
-        img = Image.open(source)
-        if format == "PNG":
-            img.save(f"{save_at}{picname}.{format.lower()}", format, optimize=True)
-        elif format == "WebP" or format == "JPEG":
-            img.save(f"{save_at}{picname}.{format.lower()}", format, quality=quality)
-        print("image saved")
-    except IOError or ValueError as err:
-        print(f"Error with this file: {err}")
+    for pic in source:
 
-
+        try:
+            img = Image.open(pic)
+            if format == "PNG":
+                img.save(f"{save_at}{picname}.{format.lower()}", format, optimize=True)
+            elif format == "WebP" or format == "JPEG":
+                img.save(f"{save_at}{picname}.{format.lower()}", format, quality=quality)
+            print("image saved")
+        except IOError or ValueError as err:
+            print(f"Error with this file: {err}")
+            
 
 # TESTS SECTION 
 download_route = "assets/converted-images/results/"
-imagen = "assets/converted-images/uploads/example1.png"
+imgs_list = ["assets/converted-images/uploads/example1.png"]
 format = "WebP"
 name_for_picture = "nuevo_images"
 
-compress_as (source=imagen, format=format, picname=name_for_picture, save_at=download_route, quality=1)
+compress_as (source=imgs_list, format=format, picname=name_for_picture, save_at=download_route, quality=1)
