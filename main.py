@@ -1,12 +1,12 @@
 from PIL import Image
 
 
-def compress_as(source: str, format: str, picname: str, save_at: str, quality: int = 65) -> None:
+def compress_as(source: list, format: str, picname: str, save_at: str, quality: int = 65) -> None:
     """
     Compress an image file using the specified format and save it at the specified location.
 
     Parameters:
-    source (str): The path to the input image file.
+    source (list): A list with the paths to the input image files.
     format (str): The format to save the compressed image in. Supported formats are "PNG", "JPEG", and "WEBP".
     picname (str): The name of the output image file.
     save_at (str): The path to the directory where the output image file will be saved.
@@ -27,8 +27,10 @@ def compress_as(source: str, format: str, picname: str, save_at: str, quality: i
     compress_as(source=imagen, format=format, picname=name_for_picture, save_at=download_route, quality=30)
     ```
     """
-    for pic in source:
+    if not isinstance(source, list):
+        raise TypeError("The 'source' argument must be a list of file paths.")
 
+    for pic in source:
         try:
             img = Image.open(pic)
             if format == "PNG":
@@ -38,7 +40,7 @@ def compress_as(source: str, format: str, picname: str, save_at: str, quality: i
             print("image saved")
         except IOError or ValueError as err:
             print(f"Error with this file: {err}")
-            
+
 
 # TESTS SECTION 
 download_route = "assets/converted-images/results/"
@@ -46,4 +48,4 @@ imgs_list = ["assets/converted-images/uploads/example1.png"]
 format = "WebP"
 name_for_picture = "nuevo_images"
 
-compress_as (source=imgs_list, format=format, picname=name_for_picture, save_at=download_route, quality=1)
+compress_as (source=imgs_list, format=format, picname=name_for_picture, save_at=download_route, quality=65)
