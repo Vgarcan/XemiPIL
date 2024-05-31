@@ -1,5 +1,10 @@
 from PIL import Image
 import os
+def create_directory(path):
+    try:
+        os.rmdir(path)
+    except Exception as err:
+        print(err)
 
 def find_images(upload_folder, accepted_formats):
     """
@@ -32,29 +37,32 @@ def find_images(upload_folder, accepted_formats):
 
 def save_as(source: list, format: str, save_at: str, quality: int = 0):
     """
-    This function saves images from a list of source paths to a specified directory with a given format and quality.
+    This function converts images from a given list of source paths to a specified format and saves them at a specified location.
 
     Parameters:
     source (list): A list of file paths to the images to be converted.
-    format (str): The format to which the images will be converted.
-    save_at (str): The directory where the converted images will be saved.
-    quality (int, optional): The quality of the converted images. Default is 0, which means no compression.
+    format (str): The format to which the images should be converted.
+    save_at (str): The directory where the converted images should be saved.
+    quality (int, optional): The quality of the converted images. Default is 0, which means the original quality is preserved.
 
     Returns:
     None
 
     Raises:
-    TypeError: If the 'ource' argument is not a list.
+    TypeError: If the 'ource' argument is not a list of file paths.
 
     Note:
     The function uses the PIL library to open and save images.
-    If the 'quality' parameter is greater than 0, the function will save the images with the specified quality.
-    If the 'quality' parameter is 0, the function will save the images without any compression.
-    The function will print an error message if an image cannot be saved due to an IOError or ValueError.
+    If the 'quality' parameter is 0, the original quality is preserved.
+    If the 'quality' parameter is greater than 0, the function optimizes the converted images based on the specified format.
+    The function removes the original image after successful conversion.
     """
 
     if not isinstance(source, list):
         raise TypeError("The 'ource' argument must be a list of file paths.")
+    elif len(source) == 0:
+        print("No images to convert.")
+        return
     else:
         for pic in source:
             try:
@@ -69,12 +77,16 @@ def save_as(source: list, format: str, save_at: str, quality: int = 0):
                     print(f"The format '{format}' with 'QUALITY > 0' is not supported.\nPlease use one of the following formats with 'QUALITY > 0':\nWebP, JPEG, PNG,")
                     break
                 print("image saved")
+                os.remove(pic)
             except IOError or ValueError as err:
                 print(f"File: '{os.path.basename(pic)}' gave the next ERROR:\n {err}")
 
 
-# TESTS SECTION 
-UPLOAD_DIR = "assets/converted-images/uploads/"
+# TESTS SECTION #
+#################
+UPLOAD_DIR = "./assets/converted-images/uploads/"
+create_directory(UPLOAD_DIR)
+
 ACCEPTED_FORMATS = (
     '.bmp', '.dib', '.eps', '.gif', '.icns', '.ico', '.im',
     '.jpeg', '.jpg', '.msp', '.pcx', '.png', '.ppm', '.sgi',
@@ -85,7 +97,9 @@ CONVERTIONS_FORMATS = (
     'JPEG', 'JPG', 'MSP', 'PCX', 'PNG', 'PPM', 'SGI',
     'TGA', 'TIFF', 'WebP', 'XBM'
 )
-DOWNLOAD_DIR = "assets/converted-images/results/"
+
+DOWNLOAD_DIR = "./assets/converted-images/results/"
+create_directory(UPLOAD_DIR)
 
 # To be converted to:
 chosen_format = "WebP"
