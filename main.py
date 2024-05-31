@@ -21,45 +21,56 @@ def find_images(upload_folder, accepted_formats):
     paths_list = []
 
     for image in os.listdir(upload_folder):
-        if image.endswith(accepted_formats):
-            paths_list.append(os.path.join(upload_folder, image))
+        try:
+            if image.endswith(accepted_formats):
+                paths_list.append(os.path.join(upload_folder, image))
+        except Exception as e:
+            print(f'Problems with file {os.path.basename(image)}:\n',e)
+            continue
 
     return paths_list
 
-def compress_as(source: list, format: str, save_at: str, quality: int = 65) -> None:
+def save_as(source: list, format: str, save_at: str, quality: int = 0):
     """
-    This function compresses a list of images to a specified format and saves them at a given location.
+    This function saves images from a list of source paths to a specified directory with a given format and quality.
 
     Parameters:
-    source (list): A list of file paths to the images to be compressed.
-    format (str): The format to which the images should be compressed. It can be 'png', 'jpeg', or 'webp'.
-    save_at (str): The directory where the compressed images should be saved.
-    quality (int, optional): The quality of the compressed images. It is only applicable for 'jpeg' and 'webp' formats. Default is 65.
+    source (list): A list of file paths to the images to be converted.
+    format (str): The format to which the images will be converted.
+    save_at (str): The directory where the converted images will be saved.
+    quality (int, optional): The quality of the converted images. Default is 0, which means no compression.
 
     Returns:
     None
 
     Raises:
-    TypeError: If the 'ource' argument is not a list of file paths.
+    TypeError: If the 'ource' argument is not a list.
 
     Note:
-    The function prints 'image saved' for each successfully compressed image.
-    It prints an error message for each image that encounters an IOError or ValueError.
+    The function uses the PIL library to open and save images.
+    If the 'quality' parameter is greater than 0, the function will save the images with the specified quality.
+    If the 'quality' parameter is 0, the function will save the images without any compression.
+    The function will print an error message if an image cannot be saved due to an IOError or ValueError.
     """
-    
+
     if not isinstance(source, list):
         raise TypeError("The 'ource' argument must be a list of file paths.")
     else:
         for pic in source:
             try:
                 img = Image.open(pic)
-                if format.lower() == "png":
+                if quality == 0:
+                    img.save(f"{save_at}{os.path.basename(pic)}.{format.lower()}", format)
+                elif format.lower() == "png":
                     img.save(f"{save_at}{os.path.basename(pic)}-min.{format.lower()}", format, optimize=True)
-                elif format.lower() == "webp" or format.lower() == "jpeg":
+                elif format.lower() in ["webp", "jpeg"]:
                     img.save(f"{save_at}{os.path.basename(pic)}-min.{format.lower()}", format, quality=quality)
+                else:
+                    print(f"The format '{format}' with 'QUALITY > 0' is not supported.\nPlease use one of the following formats with 'QUALITY > 0':\nWebP, JPEG, PNG,")
+                    break
                 print("image saved")
             except IOError or ValueError as err:
-                print(f"Error with this file: {err}")
+                print(f"File: '{os.path.basename(pic)}' gave the next ERROR:\n {err}")
 
 
 # TESTS SECTION 
@@ -69,13 +80,18 @@ ACCEPTED_FORMATS = (
     '.jpeg', '.jpg', '.msp', '.pcx', '.png', '.ppm', '.sgi',
     '.spider', '.tga', '.tiff', '.webp', '.xbm'
 )
+CONVERTIONS_FORMATS = (
+    'BMP', 'DIB', 'EPS', 'GIF', 'ICNS', 'ICO', 'IM',
+    'JPEG', 'JPG', 'MSP', 'PCX', 'PNG', 'PPM', 'SGI',
+    'TGA', 'TIFF', 'WebP', 'XBM'
+)
 DOWNLOAD_DIR = "assets/converted-images/results/"
 
 # To be converted to:
-format = "WebP"
+chosen_format = "WebP"
 
-imgs_list = ["assets/converted-images/uploads/example1.png"]
+IMGS_LIST = find_images(UPLOAD_DIR, ACCEPTED_FORMATS)
 name_for_picture = "nuevo_images"
 
 
-compress_as (source=imgs_list, format=format, save_at=DOWNLOAD_DIR, quality=65)
+save_as (source=IMGS_LIST, format=chosen_format, save_at=DOWNLOAD_DIR, quality=65)
