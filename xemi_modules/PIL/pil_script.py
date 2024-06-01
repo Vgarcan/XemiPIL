@@ -1,8 +1,27 @@
 from PIL import Image
 import os
+
+
 def create_directory(path):
+    """
+    This function creates a directory at the specified path.
+
+    Parameters:
+    path (str): The path where the directory should be created.
+
+    Returns:
+    None
+
+    Raises:
+    Exception: If any error occurs during the creation of the directory.
+
+    Note:
+    The function uses the os.mkdir() method to create the directory.
+    If the directory already exists, it will not be created again.
+    If any error occurs during the creation of the directory, it will be caught and printed.
+    """
     try:
-        os.rmdir(path)
+        os.mkdir(path)
     except Exception as err:
         print(err)
 
@@ -77,35 +96,8 @@ def save_as(source: list, format: str, save_at: str, quality: int = 0):
                     print(f"The format '{format}' with 'QUALITY > 0' is not supported.\nPlease use one of the following formats with 'QUALITY > 0':\nWebP, JPEG, PNG,")
                     break
                 print("image saved")
-                os.remove(pic)
+                
             except IOError or ValueError as err:
                 print(f"File: '{os.path.basename(pic)}' gave the next ERROR:\n {err}")
 
 
-# TESTS SECTION #
-#################
-UPLOAD_DIR = "./assets/converted-images/uploads/"
-create_directory(UPLOAD_DIR)
-
-ACCEPTED_FORMATS = (
-    '.bmp', '.dib', '.eps', '.gif', '.icns', '.ico', '.im',
-    '.jpeg', '.jpg', '.msp', '.pcx', '.png', '.ppm', '.sgi',
-    '.spider', '.tga', '.tiff', '.webp', '.xbm'
-)
-CONVERTIONS_FORMATS = (
-    'BMP', 'DIB', 'EPS', 'GIF', 'ICNS', 'ICO', 'IM',
-    'JPEG', 'JPG', 'MSP', 'PCX', 'PNG', 'PPM', 'SGI',
-    'TGA', 'TIFF', 'WebP', 'XBM'
-)
-
-DOWNLOAD_DIR = "./assets/converted-images/results/"
-create_directory(UPLOAD_DIR)
-
-# To be converted to:
-chosen_format = "WebP"
-
-IMGS_LIST = find_images(UPLOAD_DIR, ACCEPTED_FORMATS)
-name_for_picture = "nuevo_images"
-
-
-save_as (source=IMGS_LIST, format=chosen_format, save_at=DOWNLOAD_DIR, quality=65)
