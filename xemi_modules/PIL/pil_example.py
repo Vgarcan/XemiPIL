@@ -28,3 +28,4 @@ IMGS_LIST = find_images(UPLOAD_DIR, ACCEPTED_FORMATS)
 name_for_picture = "nuevo_images"
 
 save_as (source=IMGS_LIST, format=chosen_format, save_at=DOWNLOAD_DIR, quality=65)
+clear_used_images(IMGS_LIST, ACCEPTED_FORMATS)

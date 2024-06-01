@@ -1,5 +1,6 @@
 from PIL import Image
 import os
+import time
 
 
 def create_directory(path):
@@ -95,9 +96,21 @@ def save_as(source: list, format: str, save_at: str, quality: int = 0):
                 else:
                     print(f"The format '{format}' with 'QUALITY > 0' is not supported.\nPlease use one of the following formats with 'QUALITY > 0':\nWebP, JPEG, PNG,")
                     break
-                print("image saved")
+                print(pic)
+                
                 
             except IOError or ValueError as err:
                 print(f"File: '{os.path.basename(pic)}' gave the next ERROR:\n {err}")
+    
 
 
+def clear_used_images(listed_images, accepted_formats):
+
+    for image in listed_images:
+        try:
+            if image.endswith(accepted_formats):
+                os.remove(image)
+        except Exception as e:
+            print(f'Problems with file {os.path.basename(image)}:\n',e)
+            continue
+    
