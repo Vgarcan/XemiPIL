@@ -55,21 +55,47 @@ def find_images(upload_folder, accepted_formats):
 
     return paths_list
 
-def save_as(source: list, format: str, save_at: str, quality: int = 0):
+def clear_used_images(listed_images):
     """
-    This function converts images from a given list of source paths to a specified format and saves them at a specified location.
+    This function deletes a list of images from the file system.
 
     Parameters:
-    source (list): A list of file paths to the images to be converted.
+    listed_images (list): A list of file paths to the images to be deleted.
+
+    Returns:
+    None
+
+    Raises:
+    Exception: If any error occurs during the deletion of an image.
+
+    Note:
+    The function uses the os.remove() method to delete each image in the list.
+    If an error occurs during the deletion of an image, it will be caught and printed.
+    """
+    for image in listed_images:
+        try:
+            os.remove(image)
+        except Exception as e:
+            print(f'Problems deleting file "{os.path.basename(image)}":\n',e)
+            continue
+
+def save_as(source: list, format: str, save_at: str, quality: int = 0):
+    """
+    Converts images from a given list of source paths to a specified format and saves them at a specified location.
+
+    Parameters:
+    source (list): A list of file paths to the images to be converted. Each path should be a string.
     format (str): The format to which the images should be converted.
-    save_at (str): The directory where the converted images should be saved.
+    save_at (str): The directory where the converted images should be saved. The directory should exist.
     quality (int, optional): The quality of the converted images. Default is 0, which means the original quality is preserved.
+        If quality > 0, the function optimizes the converted images based on the specified format.
 
     Returns:
     None
 
     Raises:
     TypeError: If the 'ource' argument is not a list of file paths.
+    ValueError: If the 'format' argument is not a supported format.
 
     Note:
     The function uses the PIL library to open and save images.
@@ -84,6 +110,7 @@ def save_as(source: list, format: str, save_at: str, quality: int = 0):
         print("No images to convert.")
         return
     else:
+        converted_pics = []
         for pic in source:
             try:
                 img = Image.open(pic)
@@ -96,21 +123,10 @@ def save_as(source: list, format: str, save_at: str, quality: int = 0):
                 else:
                     print(f"The format '{format}' with 'QUALITY > 0' is not supported.\nPlease use one of the following formats with 'QUALITY > 0':\nWebP, JPEG, PNG,")
                     break
-                print(pic)
-                
+                converted_pics.append(pic)
                 
             except IOError or ValueError as err:
                 print(f"File: '{os.path.basename(pic)}' gave the next ERROR:\n {err}")
-    
+                continue
 
-
-def clear_used_images(listed_images, accepted_formats):
-
-    for image in listed_images:
-        try:
-            if image.endswith(accepted_formats):
-                os.remove(image)
-        except Exception as e:
-            print(f'Problems with file {os.path.basename(image)}:\n',e)
-            continue
-    
+    clear_used_images(converted_pics)
